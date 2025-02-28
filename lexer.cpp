@@ -35,7 +35,7 @@ std::unordered_map<std::string, std::string> lookup_table = {
     {">=", "GREATER_THEN_EQ"},
     {"==", "LOGIC_EQUAL"},
     {"&&", "LOGIC_AND"},
-    {"||", "LOGIC_NOT"},
+    {"||", "LOGIC_OR"},
     {"!", "LOGIC_NOT"},
     {"&", "BIT_AND"},
     {"|", "BIT_OR"},
@@ -109,9 +109,16 @@ void lookup(char unknown) {
 
     auto match = lookup_table.find(double_char);                //checks if double_char is in table this is for the double operator cases like ++,--,<<,etc.
 
-    if(match != lookup_table.end()) {                           //if double_char is found in table
+    if(match != lookup_table.end()) {  
+        addChar();
+                                                                 //if double_char is found in table
         token = match->second;                                  //the token is assigned to the found character
-        addChar();                                              //the second character is assigned to the lexeme
+        if(token == "COMMENT") {                                //if the token is a comment
+
+            while(charClass != 'N') {                           //while the char is not a new line
+                getChar();                                      //get the next character
+            }
+        }
         getChar();
     }
 }
@@ -160,9 +167,9 @@ void lex() {
 }
 
 //main driver function that will call the lexing function until the end of the file is reached
-int main() {
+int main(int argc, char* argv[]) {
     char character;
-    file = fopen("test2.txt", "r");                             //opens file
+    file = fopen(argv[1], "r");                             //opens file
 
     if (file == NULL) {                                        //checks if file is opened
         perror("Can't open file");
